@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Lavabirds - Early Access!</title>
+</head>
+
+<body>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.slim.js"></script>
+	<style type="text/css">
+		canvas,
+		#BACKGROUND {
+			position: absolute;
+		}
+
+		#BACKGROUND {
+			background: linear-gradient(to top, rgba(255, 100, 100, 0.9), rgba(240, 10, 10, 0.8));
+			background-repeat: no-repeat;
+			background-size: 300% 300%;
+			height: 800px;
+			width: 500px;
+			-webkit-animation: background 13s ease infinite;
+			-moz-animation: background 13s ease infinite;
+			animation: background 13s ease infinite;
+		}
+
+		@-webkit-keyframes background {
+			0% {
+				background-position: 50% 0%
+			}
+
+			50% {
+				background-position: 50% 100%
+			}
+
+			100% {
+				background-position: 50% 0%
+			}
+		}
+
+		@-moz-keyframes background {
+			0% {
+				background-position: 50% 0%
+			}
+
+			50% {
+				background-position: 50% 100%
+			}
+
+			100% {
+				background-position: 50% 0%
+			}
+		}
+
+		@keyframes background {
+			0% {
+				background-position: 50% 0%
+			}
+
+			50% {
+				background-position: 50% 100%
+			}
+
+			100% {
+				background-position: 50% 0%
+			}
+		}
+	</style>
+	<div id="hidden" style="display: none; opacity: 0; visibility: hidden;"><img id="lava" src="client/imgs/lava.png"> <img id="platformSprites" src="client/imgs/platform.png"><img id="birdSprites" src="client/imgs/birdSprites.png"></div>
+	<canvas id="FOREGROUND" style="z-index: 3"></canvas>
+	<canvas id="MAINFRAME" style="z-index: 2"></canvas>
+	<div id="BACKGROUND" style="z-index: 1"></div>
+	<div id="status" style="height: 2em; width: 500px;color: white; background: black">0</div>
+	<script type="text/javascript">
+		var socket = io();
+		var key;
+		var id;
+
+		socket.on("yourBird", function(data) {
+			id = data.id;
+		});
+
+		socket.on("initWorld", function(data){
+			initWorld(data);
+		});
+
+		socket.on("update", function(data){
+			updateWorld(data);
+		});
+
+
+
+		var actionDone = false;
+
+		document.onkeydown = function(e) {
+
+			key = e.keyCode;
+
+			if (actionDone) {
+				return;
+			}
+			if (key == 37 || key == 65) { //left or a
+				key = 'left';
+				var send = function() {
+					socket.emit('keyPressed', {
+						key: key,
+						id: id
+					});
+				}
+				send();
+			}
+			if (key == 38 || key == 87 || key == 32) { //up or w or space
+				key = 'up';
+				var send = function() {
+					socket.emit('keyPressed', {
+						key: key
+					});
+				}
+				send();
+			}
+			if (key == 39 || key == 68) { //right or d
+				key = 'right';
+				var send = function() {
+					socket.emit('keyPressed', {
+						key: key
+					});
+				}
+				send();
+			}
+			if (key == 40 || key == 83) { //down or s
+				key = 'down';
+				var send = function() {
+					socket.emit('keyPressed', {
+						key: key
+					});
+				}
+				send();
+			}
+			actionDone = true;
+		}
+
+		document.onkeyup = function(e) {
+			actionDone = false;
+		}
+
+		window.onload = function() {
+
+			var WIDTH = 500;
+			var HEIGHT = 800;
+
+			var FGcanvas = document.getElementById("FOREGROUND");
+			FGcanvas.width = WIDTH;
+			FGcanvas.height = HEIGHT;
+
+			var FGctx = FGcanvas.getContext("2d");
+			var img = document.getElementById("lava");
+			FGctx.drawImage(img, 0, 700);
+
+			var MFcanvas = document.getElementById("MAINFRAME");
+			MFcanvas.width = WIDTH;
+			MFcanvas.height = HEIGHT;
+
+			//startInterval();
+
+		};
+	</script>
+	<script type="text/javascript" src="client/js/game.js"></script>
+	<script type="text/javascript"></script>
+</body>
+
+</html>
